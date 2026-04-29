@@ -1,12 +1,27 @@
+"use client";
 import img from "@/assets/logo.png";
+import { authClient } from "@/lib/auth-client";
+import { Avatar, Button } from "@heroui/react";
 import Image from "next/image";
 import Link from "next/link";
 
-
 const Navbar = () => {
-    return (
-        <div className="border-b px-2">
-             <nav className=" flex justify-between items-center  py-3 max-w-7xl mx-auto w-full">
+  const {
+    data: session,
+    isPending, //loading state
+    error, //error object
+    refetch, //refetch the session
+  } = authClient.useSession();
+
+  const user = session?.user;
+  
+  const handelSignOut =async () => {
+    await authClient.signOut();
+  }
+
+  return (
+    <div className="border-b px-2">
+      <nav className=" flex justify-between items-center  py-3 max-w-7xl mx-auto w-full">
         <div className="flex gap-2 items-center">
           <Image
             src={img}
@@ -35,19 +50,31 @@ const Navbar = () => {
         </ul>
 
         <div className="flex gap-4">
-          <ul className="flex items-center gap-2  text-sm">
-            <li>
-              <Link href={"/signup"}>SignUp</Link>
-            </li>
-            <li>
-              <Link href={"/signin"}>SignIn</Link>
-            </li>
-          </ul>
+          {!user && (
+            <ul className="flex items-center gap-2  text-sm">
+              <li>
+                <Link href={"/signup"}>SignUp</Link>
+              </li>
+              <li>
+                <Link href={"/signin"}>SignIn</Link>
+              </li>
+            </ul>
+          )}
+
+          {user && (
+            <div className="flex  items-center gap-2">
+              <h2 className="font-bold text-[#db5b10]">Hey, {user.name}</h2>
+              <Avatar>
+                <Avatar.Image alt="John Doe" src={user.image} referrerPolicy="no-referrer" />
+                <Avatar.Fallback>{user.name[0]}</Avatar.Fallback>
+              </Avatar>
+              <Button variant="danger" onClick={handelSignOut}>SignOut</Button>
+            </div>
+          )}
         </div>
       </nav>
-    
-        </div>
-    );
+    </div>
+  );
 };
 
 export default Navbar;
