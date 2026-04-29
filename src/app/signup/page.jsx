@@ -34,6 +34,7 @@ export default function SignUpPage() {
           email,
           image,
           password,
+          
       });
       console.log( "Hima , " ,   { data, error });
       if (error) {
